@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECG Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .input-group button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+
+        .input-group button:hover {
+            background-color: #0056b3;
+        }
+
+        .results {
+            margin-top: 20px;
+        }
+
+        .results h2 {
+            margin-bottom: 10px;
+        }
+
+        .results p {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>ECG Analysis</h1>
+        <div class="input-group">
+            <label for="ecgData">Upload ECG Data (CSV format):</label>
+            <input type="file" id="ecgData" accept=".csv">
+        </div>
+        <div class="input-group">
+            <button onclick="uploadECGData()">Analyze</button>
+        </div>
+        <div class="results" id="results">
+            <h2>Results:</h2>
+            <p id="resultText"></p>
+        </div>
+    </div>
+
+    <script>
+        async function uploadECGData() {
+            const fileInput = document.getElementById('ecgData');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Please select a file to upload.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('resultText').innerText = `Predictions: ${data.predictions.join(', ')}`;
+                } else {
+                    document.getElementById('resultText').innerText = 'Error processing the file.';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('resultText').innerText = 'Error processing the file.';
+            }
+        }
+    </script>
+</body>
+
+</html>
